@@ -1,0 +1,5 @@
+Model,Accuracy
+🔥 Random Forest,0.6
+⚡ SVM,0.7
+🌐 KNN,0.7
+📊 Logistic,0.6
