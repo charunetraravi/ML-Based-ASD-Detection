@@ -353,43 +353,36 @@ with st.sidebar:
             register_action = st.form_submit_button(t("register_btn"), use_container_width=True)
 
     # LOGIN LOGIC
-    if login_action:
-        if not all([email, phone, password]):
-            st.error(t("fields_required"))
-        else:
-            try:
-                auth_resp = supabase.auth.sign_in_with_password({
-                    "email": email,
-                    "password": password
-                })
+   if login_action:
+    if not all([email, phone, password]):
+        st.error(t("fields_required"))
+    else:
+        try:
+            # ✅ CORRECT: Query YOUR users_login table
+            auth_resp = (
+                supabase.table("users_login")
+                .select("id, user_id, name, email, phone")
+                .eq("email", email.lower().strip())
+                .eq("phone", phone.strip())
+                .eq("password", password)  # Matches your registration
+                .execute()
+            )
 
-                if auth_resp.user is None:
-                    st.error(t("invalid_credentials"))
-                else:
-                    udata = (
-                        supabase.table("users_login")
-                        .select("user_id, name, email, phone")
-                        .eq("email", email.lower())
-                        .execute()
-                    )
+            if auth_resp.data and len(auth_resp.data) > 0:
+                user_row = auth_resp.data[0]
+                st.success(t("login_success"))
+                st.session_state["user_id"] = user_row["id"]  # Table ID (1,2,3...)
+                st.session_state["user_info"] = {
+                    "name": user_row["name"],
+                    "email": user_row["email"], 
+                    "phone": user_row["phone"]
+                }
+                st.rerun()
+            else:
+                st.error(t("invalid_credentials"))
+        except Exception as e:
+            st.error(f"Login failed: {str(e)}")
 
-                    if udata.data:
-                        user_row = udata.data[0]
-                        if user_row["phone"] == phone:
-                            st.success(t("login_success"))
-                            st.session_state["user_id"] = user_row["user_id"]
-                            st.session_state["user_info"] = {
-                                "name": user_row["name"],
-                                "email": user_row["email"],
-                                "phone": user_row["phone"]
-                            }
-                            st.rerun()
-                        else:
-                            st.error("📱 phone number doesn't match the account")
-                    else:
-                        st.error(t("account_not_found"))
-            except Exception as e:
-                st.error("💥 Login failed: " + str(e))
 
     # REGISTER LOGIC
 if register_action:
@@ -657,5 +650,6 @@ if st.session_state.get("user_id"):
 else:
     st.warning(t("auth_required"))
     st.info(t("auth_info"))
+
 
 
