@@ -8,15 +8,6 @@ import io
 import re
 import time
 
-from supabase import create_client
-
-# Supabase credentials
-SUPABASE_URL = "https://xiiiuexbqddmbchwqyog.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhpaWl1ZXhicWRkbWJjaHdxeW9nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3MTA1NTQsImV4cCI6MjA4ODI4NjU1NH0.5Q1jW4nLOImsEGlWsYbp2KfH6PwkH6gjLNl4jiexZuA"
-
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-
-
 st.set_page_config(page_title="AI ASD Detection", page_icon="🧠", layout="wide")
 
 st.markdown("""
@@ -473,4 +464,5 @@ if st.session_state.get("user_id"):
 else:
     st.warning(t("auth_required"))
     st.info(t("auth_info"))
+
 
