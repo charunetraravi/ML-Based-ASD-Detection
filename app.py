@@ -541,15 +541,15 @@ if st.session_state.get("user_id"):
     with c2:
         ethnicity = st.selectbox(
             t("ethnicity"),
-            ["?", "Indian", "South Indian", "North Indian", "White-European"]
+            ["","Indian", "South Indian", "North Indian", "White-European"]
         )
         jaundice = st.selectbox(
             t("jaundice"),
-            ["?", "no", "yes"]
+            ["", "no", "yes"]
         )
         family_asd = st.selectbox(
             t("family_asd"),
-            ["?", "no", "yes"]
+            ["", "no", "yes"]
         )
 
     # ANALYZE BUTTON
@@ -650,6 +650,7 @@ if st.session_state.get("user_id"):
 else:
     st.warning(t("auth_required"))
     st.info(t("auth_info"))
+
 
 
 
