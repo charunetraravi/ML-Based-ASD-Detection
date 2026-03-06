@@ -191,7 +191,8 @@ def t(key: str) -> str:
 
 
 def validate_mobile(phone: str) -> bool:
-    return bool(re.match(r"^\d{10}$", phone))   # Fixed regex: 10 digits only
+    return bool(re.match(r"^\d{10}$", phone))
+  # Fixed regex: 10 digits only
 
 
 def validate_password(pwd: str) -> bool:
@@ -637,3 +638,4 @@ if st.session_state.get("user_id"):
 else:
     st.warning(t("auth_required"))
     st.info(t("auth_info"))
+
