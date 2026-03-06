@@ -536,7 +536,7 @@ if st.session_state.get("user_id"):
         gender = st.selectbox(t("gender"), ["m", "f"])
         blood_group = st.selectbox(
             t("blood_group"),
-            ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"]
+            ["","A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"]
         )
     with c2:
         ethnicity = st.selectbox(
@@ -650,5 +650,6 @@ if st.session_state.get("user_id"):
 else:
     st.warning(t("auth_required"))
     st.info(t("auth_info"))
+
 
 
