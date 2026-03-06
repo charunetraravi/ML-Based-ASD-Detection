@@ -238,15 +238,15 @@ def save_user_response(record):
         "timestamp": datetime.now().isoformat(timespec="seconds"),
         "user_id": st.session_state.get("user_id", ""),
         "user_name": st.session_state.get("user_info", {}).get("name", ""),
-        "A1": record.get("a1", 0),
-        "A2": record.get("a2", 0),
-        "A3": record.get("a3", 0),
-        "A4": record.get("a4", 0),
-        "A5": record.get("a5", 0),
-        "A6": record.get("a6", 0),
-        "A7": record.get("a7", 0),
-        "A8": record.get("a8", 0),
-        "A9": record.get("a9", 0),
+        "a1": record.get("a1", 0),
+        "a2": record.get("a2", 0),
+        "a3": record.get("a3", 0),
+        "a4": record.get("a4", 0),
+        "a5": record.get("a5", 0),
+        "a6": record.get("a6", 0),
+        "a7": record.get("a7", 0),
+        "a8": record.get("a8", 0),
+        "a9": record.get("a9", 0),
         "a10": record.get("a10", 0),
         "total_ones": record.get("total_ones", 0),
         "age_years": record.get("age_years", 0),
@@ -650,3 +650,4 @@ if st.session_state.get("user_id"):
 else:
     st.warning(t("auth_required"))
     st.info(t("auth_info"))
+
