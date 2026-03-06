@@ -392,52 +392,43 @@ with st.sidebar:
                 st.error("💥 Login failed: " + str(e))
 
     # REGISTER LOGIC
-    if register_action:
-        errors = []
-        if not all([full_name.strip(), email.strip(), phone, password]):
-            errors.append(t("fields_required"))
-        elif not validate_mobile(phone):
-            errors.append(t("mobile_invalid"))
-        elif not validate_password(password):
-            errors.append(t("password_invalid"))
+if register_action:
+    errors = []
+    if not all([full_name.strip(), email.strip(), phone, password]):
+        errors.append(t("fields_required"))
+    elif not validate_mobile(phone):
+        errors.append(t("mobile_invalid"))
+    elif not validate_password(password):
+        errors.append(t("password_invalid"))
 
-        # Optional: check if email already exists (Supabase Auth)
+    if errors:
+        for e in errors:
+            st.error(e)
+    else:
         try:
-            existing_user = supabase.auth.admin.get_user_by_email(email)
-            if existing_user.user:
-                errors.append(t("email_exists"))
-        except:
-            pass  # ignore if admin permission missing
+            # DISABLE Supabase Auth email-sign-up (timeout source)
+            # supabase.auth.sign_up({
+            #     "email": email,
+            #     "password": password
+            # })
 
-        if errors:
-            for e in errors:
-                st.error(e)
-        else:
-            try:
-                # 1) Create user in Supabase Auth
-                supabase.auth.sign_up({
-                    "email": email,
+            uresp = (
+                supabase.table("users_login").insert({
+                    "timestamp": datetime.now().isoformat(timespec="seconds"),
+                    "user_id": str(uuid.uuid4())[:8],
+                    "name": full_name.strip(),
+                    "email": email.strip().lower(),
+                    "phone": phone.strip(),
                     "password": password
-                })
+                }).execute()
+            )
 
-                # 2) Insert into your users_login table
-                uresp = (
-                    supabase.table("users_login").insert({
-                        "timestamp": datetime.now().isoformat(timespec="seconds"),
-                        "user_id": str(uuid.uuid4())[:8],
-                        "name": full_name.strip(),
-                        "email": email.strip().lower(),
-                        "phone": phone.strip(),
-                        "password": password  # Note: better to hash in production
-                    }).execute()
-                )
-
-                if uresp.data:
-                    st.success(t("register_success"))
-                else:
-                    st.error("❌ Register: failed to save user in database.")
-            except Exception as e:
-                st.error("💥 Register failed: " + str(e))
+            if uresp.data:
+                st.success(t("register_success"))
+            else:
+                st.error("❌ Register: failed to save user in database.")
+        except Exception as e:
+            st.error("💥 Register failed: " + str(e))
 
     # Show user info + logout button if logged in
     if st.session_state.get("user_id"):
@@ -666,4 +657,5 @@ if st.session_state.get("user_id"):
 else:
     st.warning(t("auth_required"))
     st.info(t("auth_info"))
+
 
