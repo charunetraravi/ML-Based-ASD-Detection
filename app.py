@@ -11,7 +11,7 @@ from supabase import create_client
 
 # Supabase credentials (use secrets.toml in production)
 SUPABASE_URL = "https://xiiiuexbqddmbchwqyog.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhpaWl1ZXhicWRkbWJjaHdxeW9nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3MTA1NTQsImV4cCI6MjA4ODI4NjU1NH0.5Q1jW4nLOImsEGlWsYbp2KfH6PwkH6gjLNl4jiexZuA"
+SUPABASE_KEY = "sb_publishable_kB5i65Dyt8wPPwjk2la35g_O5yuCpm_"
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
@@ -666,3 +666,4 @@ if st.session_state.get("user_id"):
 else:
     st.warning(t("auth_required"))
     st.info(t("auth_info"))
+
