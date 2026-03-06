@@ -238,16 +238,16 @@ def save_user_response(record):
         "timestamp": datetime.now().isoformat(timespec="seconds"),
         "user_id": st.session_state.get("user_id", ""),
         "user_name": st.session_state.get("user_info", {}).get("name", ""),
-        "A1": record.get("A1", 0),
-        "A2": record.get("A2", 0),
-        "A3": record.get("A3", 0),
-        "A4": record.get("A4", 0),
-        "A5": record.get("A5", 0),
-        "A6": record.get("A6", 0),
-        "A7": record.get("A7", 0),
-        "A8": record.get("A8", 0),
-        "A9": record.get("A9", 0),
-        "A10": record.get("A10", 0),
+        "A1": record.get("a1", 0),
+        "A2": record.get("a2", 0),
+        "A3": record.get("a3", 0),
+        "A4": record.get("a4", 0),
+        "A5": record.get("a5", 0),
+        "A6": record.get("a6", 0),
+        "A7": record.get("a7", 0),
+        "A8": record.get("a8", 0),
+        "A9": record.get("a9", 0),
+        "a10": record.get("a10", 0),
         "total_ones": record.get("total_ones", 0),
         "age_years": record.get("age_years", 0),
         "age_months": record.get("age_months", 0),
@@ -352,7 +352,6 @@ with st.sidebar:
         with c2:
             register_action = st.form_submit_button(t("register_btn"), use_container_width=True)
 
-    # LOGIN LOGIC
     # LOGIN LOGIC - PROPER INDENTATION
     if login_action:
         if not all([email, phone, password]):
@@ -651,7 +650,3 @@ if st.session_state.get("user_id"):
 else:
     st.warning(t("auth_required"))
     st.info(t("auth_info"))
-
-
-
-
