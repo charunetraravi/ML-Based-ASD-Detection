@@ -110,96 +110,128 @@ EXPLANATIONS = {
 # TRANSLATIONS
 TRANSLATIONS = {
     "en": {
-        "app_title": "🧠 AI ASD Detection", "language_select": "Language / மொழி",
-        "sidebar_title": "🔐 user authentication", "account_section": "👤 account",
-        "full_name": "👤 full name *", "email": "📧 email *", "mobile": "📞 mobile (10 digits) *",
-        "password": "🔑 password (8+ chars) *", "login_btn": "✅ login", "register_btn": "➕ register",
-        "login_success": "✅ login successful!", "welcome": "👋 welcome", "logout": "🚪 logout",
-        "fields_required": "❌ all fields required!", "mobile_invalid": "📞 mobile must be exactly 10 digits!",
-        "password_invalid": "🔑 password must be 8+ characters!", "email_exists": "❌ email already registered!",
-        "account_not_found": "❌ account not found!", "invalid_credentials": "❌ invalid credentials!",
-        "register_success": "✅ Registration complete!", "auth_required": "🔐 please complete authentication!",
+        "app_title": "🧠 AI ASD Detection",
+        "language_select": "Language / மொழி",
+        "sidebar_title": "🔐 user authentication",
+        "account_section": "👤 account",
+        "full_name": "👤 full name *",
+        "email": "📧 email *",
+        "mobile": "📞 mobile (10 digits) *",
+        "password": "🔑 password (8+ chars) *",
+        "login_btn": "✅ login",
+        "register_btn": "➕ register",
+        "login_success": "✅ login successful!",
+        "welcome": "👋 welcome",
+        "logout": "🚪 logout",
+        "fields_required": "❌ all fields required!",
+        "mobile_invalid": "📞 mobile must be exactly 10 digits!",
+        "password_invalid": "🔑 password must be 8+ characters!",
+        "email_exists": "❌ email already registered!",
+        "account_not_found": "❌ account not found!",
+        "invalid_credentials": "❌ invalid credentials!",
+        "register_success": "✅ Registration complete!",
+        "auth_required": "🔐 please complete authentication!",
         "auth_info": "📱 mobile: 10 digits | 🔑 password: 8+ characters",
-        "how_to_use": "how to use", "how_to_use_desc": "fill form → analyze → download report",
-        "scoring_guide": "scoring guide", "auto_save": "results auto‑saved to backend",
-        "asd_screening": "A1–A10 ASD screening", "scoring_hint": "select your observation",
-        "child_details": "Child / Adult details", "age_years": "age (years) *", "age_months": "extra months * (0-12)",
-        "gender": "gender", "blood_group": "🩸 blood group *", "ethnicity": "ethnicity *",
-        "jaundice": "jaundice? *", "family_asd": "family ASD? *", "analyze_btn": "🚀 analyze & save",
-        "ai_result": "AI analysis result", "asd_prob": "🧠 ASD probability", "aq_score": "📈 total AQ score",
-        "high_risk": "🔴 HIGH RISK", "moderate_risk": "🟡 MODERATE RISK", "low_risk": "🟢 LOW RISK",
-        "download_report": "📥 download report", "saved_success": "✅ saved + download ready!",
-        "no_concern": "typical", "concern": "concern", "missing_required": "❌ fill required: ",
+        "how_to_use": "how to use",
+        "how_to_use_desc": "fill form → analyze → download report",
+        "scoring_guide": "scoring guide",
+        "auto_save": "results auto‑saved to backend",
+        "asd_screening": "A1–A10 ASD screening",
+        "scoring_hint": "select your observation",
+        "child_details": "Child / Adult details",
+        "age_years": "age (years) *",
+        "age_months": "extra months * (0-12)",
+        "gender": "gender",
+        "blood_group": "🩸 blood group *",
+        "ethnicity": "ethnicity *",
+        "jaundice": "jaundice? *",
+        "family_asd": "family ASD? *",
+        "analyze_btn": "🚀 analyze & save",
+        "ai_result": "AI analysis result",
+        "asd_prob": "🧠 ASD probability",
+        "aq_score": "📈 total AQ score",
+        "high_risk": "🔴 HIGH RISK",
+        "moderate_risk": "🟡 MODERATE RISK",
+        "low_risk": "🟢 LOW RISK",
+        "download_report": "📥 download report",
+        "saved_success": "✅ saved + download ready!",
+        "no_concern": "typical",
+        "concern": "concern",
+        "missing_required": "❌ fill required: ",
         "risk_drivers": "Key Risk Drivers",
         "score_0": "✅ 0 = TYPICAL (normal behavior)",
         "score_1": "⚠️ 1 = CONCERN (ASD indicator)",
         "score_desc": "Mark what you **observe most often**",
         "month_validation": "❌ Months must be 0-12 only!"
     },
-    "ta": {
-        "app_title": "🧠 AI ASD கண்டறிதல்", "language_select": "மொழி / Language",
-        "sidebar_title": "🔐 பயனர் அங்கீகாரம்", "account_section": "👤 கணக்கு",
-        "full_name": "👤 முழு பெயர் *", "email": "📧 மின்னஞ்சல் *", "mobile": "📞 மொபைல் *",
-        "password": "🔑 பாஸ்வேர்டு *", "login_btn": "✅ உள்நுழை", "register_btn": "➕ பதிவு",
-        "login_success": "✅ உள்நுழைவு வெற்றி!", "welcome": "👋 வரவேற்கிறோம்", "logout": "🚪 வெளியேறு",
-        "fields_required": "❌ அனைத்தும் தேவை!", "mobile_invalid": "📞 10 இலக்கங்கள்!",
-                    "password_invalid": "🔑 8+ எழுத்துகள்!", 
-            "email_exists": "❌ மின்னஞ்சல் ஏற்கனவே பதிவு செய்யப்பட்டுள்ளது!",
-            "account_not_found": "❌ கணக்கு இல்லை!", 
-            "invalid_credentials": "❌ தவறான நுழைவு தகவல்கள்!",
-            "register_success": "✅ பதிவு முடிந்தது!", 
-            "auth_required": "🔐 நுழைவு தேவை!",
-            "auth_info": "📱 10 இலக்கம் | 🔑 8+ எழுத்துகள்",
-            "how_to_use": "எப்படி பயன்படுத்துவது", 
-            "how_to_use_desc": "படிவம் நிரப்பு → பகுப்பாய்வு → அறிக்கை பதிவிறக்கு",
-            "scoring_guide": "மதிப்பீட்டு வழிகாட்டி", 
-            "auto_save": "முடிவுகள் தானாக பின்புறத்தில் சேமிக்கப்படும்",
-            "asd_screening": "A1–A10 ASD திரையிடல்", 
-            "scoring_hint": "நீங்கள் பார்ப்பதை தேர்ந்தெடுக்கவும்",
-            "child_details": "குழந்தை / பெரியவர் விவரங்கள்", 
-            "age_years": "வயது (வருடங்கள்) *", 
-            "age_months": "மாதங்கள் * (0-12)",
-            "gender": "பாலினம்", 
-            "blood_group": "🩸 இரத்த வகை *", 
-            "ethnicity": "இனம் *",
-            "jaundice": "நீர்மோசம்? *", 
-            "family_asd": "குடும்ப ASD? *", 
-            "analyze_btn": "🚀 பகுப்பாய்வு & சேமி",
-            "ai_result": "AI பகுப்பாய்வு முடிவு", 
-            "asd_prob": "🧠 ASD நிகழ்தகவு", 
-            "aq_score": "📈 மொத்த AQ மதிப்பெண்",
-            "high_risk": "🔴 அதிக அபாயம்", 
-            "moderate_risk": "🟡 நடுத்தர அபாயம்", 
-            "low_risk": "🟢 குறைந்த அபாயம்",
-            "download_report": "📥 அறிக்கை பதிவிறக்கு", 
-            "saved_success": "✅ சேமித்து, பதிவிறக்கம் தயார்!",
-            "no_concern": "இயல்பு", 
-            "concern": "பிரச்சினை", 
-            "missing_required": "❌ கட்டாய புலங்கள்: ",
-            "risk_drivers": "முக்கிய அபாய ஓட்டங்கள்",
-            "score_0": "✅ 0 = இயல்பு (சாதாரண நடத்தை)", 
-            "score_1": "⚠️ 1 = பிரச்சினை (ASD சுட்டி)",
-            "score_desc": "நீங்கள் **மிகவும் பெரும்பாலும் காணும் நடத்தையை** தேர்ந்தெடுக்கவும்",
-            "month_validation": "❌ மாதங்கள் 0-12 மட்டுமே!"
-        }
+        "ta": {
+        "app_title": "🧠 AI ASD கண்டறிதல்",
+        "language_select": "மொழி / Language",
+        "sidebar_title": "🔐 பயனர் அங்கீகாரம்",
+        "account_section": "👤 கணக்கு",
+        "full_name": "👤 முழு பெயர் *",
+        "email": "📧 மின்னஞ்சல் *",
+        "mobile": "📞 மொபைல் *",
+        "password": "🔑 பாஸ்வேர்டு *",
+        "login_btn": "✅ உள்நுழை",
+        "register_btn": "➕ பதிவு",
+        "login_success": "✅ உள்நுழைவு வெற்றி!",
+        "welcome": "👋 வரவேற்கிறோம்",
+        "logout": "🚪 வெளியேறு",
+        "fields_required": "❌ அனைத்தும் தேவை!",
+        "mobile_invalid": "📞 10 இலக்கங்கள்!",
+        "password_invalid": "🔑 8+ எழுத்துகள்!",
+        "email_exists": "❌ மின்னஞ்சல் ஏற்கனவே பதிவு செய்யப்பட்டுள்ளது!",
+        "account_not_found": "❌ கணக்கு இல்லை!",
+        "invalid_credentials": "❌ தவறான நுழைவு தகவல்கள்!",
+        "register_success": "✅ பதிவு முடிந்தது!",
+        "auth_required": "🔐 நுழைவு தேவை!",
+        "auth_info": "📱 10 இலக்கம் | 🔑 8+ எழுத்துகள்",
+        "how_to_use": "எப்படி பயன்படுத்துவது",
+        "how_to_use_desc": "படிவம் நிரப்பு → பகுப்பாய்வு → அறிக்கை பதிவிறக்கு",
+        "scoring_guide": "மதிப்பீட்டு வழிகாட்டி",
+        "auto_save": "முடிவுகள் தானாக பின்புறத்தில் சேமிக்கப்படும்",
+        "asd_screening": "A1–A10 ASD திரையிடல்",
+        "scoring_hint": "நீங்கள் பார்ப்பதை தேர்ந்தெடுக்கவும்",
+        "child_details": "குழந்தை / பெரியவர் விவரங்கள்",
+        "age_years": "வயது (வருடங்கள்) *",
+        "age_months": "மாதங்கள் * (0-12)",
+        "gender": "பாலினம்",
+        "blood_group": "🩸 இரத்த வகை *",
+        "jaundice": "நீர்மோசம்? *",
+        "family_asd": "குடும்ப ASD? *",
+        "analyze_btn": "🚀 பகுப்பாய்வு & சேமி",
+        "ai_result": "AI பகுப்பாய்வு முடிவு",
+        "asd_prob": "🧠 ASD நிகழ்தகவு",
+        "aq_score": "📈 மொத்த AQ மதிப்பெண்",
+        "high_risk": "🔴 அதிக அபாயம்",
+        "moderate_risk": "🟡 நடுத்தர அபாயம்",
+        "low_risk": "🟢 குறைந்த அபாயம்",
+        "download_report": "📥 அறிக்கை பதிவிறக்கு",
+        "saved_success": "✅ சேமித்து, பதிவிறக்கம் தயார்!",
+        "no_concern": "இயல்பு",
+        "concern": "பிரச்சினை",
+        "missing_required": "❌ கட்டாய புலங்கள்: ",
+        "risk_drivers": "முக்கிய அபாய ஓட்டங்கள்",
+        "score_0": "✅ 0 = இயல்பு (சாதாரண நடத்தை)",
+        "score_1": "⚠️ 1 = பிரச்சினை (ASD சுட்டி)",
+        "score_desc": "நீங்கள் **மிகவும் பெரும்பாலும் காணும் நடத்தையை** தேர்ந்தெடுக்கவும்",
+        "month_validation": "❌ மாதங்கள் 0-12 மட்டுமே!"
+    }
 }
-
 def t(key: str) -> str:
     current_lang = st.session_state.get("lang", "English")
     lang_code = "ta" if current_lang == "தமிழ்" else "en"
     return TRANSLATIONS[lang_code].get(key, key)
 
-
 def validate_mobile(phone: str) -> bool:
-    return bool(re.match(r"^\d{10}$", phone))
-  # Fixed regex: 10 digits only
-
+    return bool(re.match(r"^\d{10}$", phone))  # remove extra backslash
 
 def validate_password(pwd: str) -> bool:
     return len(pwd) >= 8
 
 def save_user_response(record):
-    SERVICE_TABLE = "user_response"   # exactly what you have in Supabase
+    SERVICE_TABLE = "user_response"
     RESPONSE_FILE = "user_responses.csv"
 
     full_record = {
@@ -277,7 +309,6 @@ def get_risk_drivers(a_scores, prob, total_months):
         social_matches = [q for q in social_drivers if q in ones]
         return social_matches[:2] if social_matches else ones[:2]
     return ["None"]
-
 # SESSION STATE
 if "lang" not in st.session_state:
     st.session_state["lang"] = "English"
@@ -285,7 +316,6 @@ if "user_id" not in st.session_state:
     st.session_state["user_id"] = None
 if "user_info" not in st.session_state:
     st.session_state["user_info"] = {}
-
 
 # HEADER
 col_title, col_lang = st.columns([3, 1])
@@ -425,7 +455,6 @@ with st.sidebar:
             supabase.auth.sign_out()
             st.rerun()
 
-
 # MAIN APP
 if st.session_state.get("user_id"):
     QUESTIONS = {
@@ -440,7 +469,6 @@ if st.session_state.get("user_id"):
         "A9": {"en": "Pretend play?", "ta": "கற்பனை விளையாட்டு?"},
         "A10": {"en": "Age-appropriate milestones?", "ta": "வயது ஏற்ற வளர்ச்சி?"}
     }
-
     # Use current language for questions
     lang_key = "ta" if st.session_state["lang"] == "தமிழ்" else "en"
 
@@ -638,4 +666,3 @@ if st.session_state.get("user_id"):
 else:
     st.warning(t("auth_required"))
     st.info(t("auth_info"))
-
