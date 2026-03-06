@@ -225,7 +225,7 @@ def t(key: str) -> str:
     return TRANSLATIONS[lang_code].get(key, key)
 
 def validate_mobile(phone: str) -> bool:
-    return bool(re.match(r"^\d{10}$", phone))  # remove extra backslash
+    return bool(re.match(r"^\d{10}$", phone))  # ✅ Remove extra backslash
 
 def validate_password(pwd: str) -> bool:
     return len(pwd) >= 8
@@ -353,36 +353,37 @@ with st.sidebar:
             register_action = st.form_submit_button(t("register_btn"), use_container_width=True)
 
     # LOGIN LOGIC
-   if login_action:
-    if not all([email, phone, password]):
-        st.error(t("fields_required"))
-    else:
-        try:
-            # ✅ CORRECT: Query YOUR users_login table
-            auth_resp = (
-                supabase.table("users_login")
-                .select("id, user_id, name, email, phone")
-                .eq("email", email.lower().strip())
-                .eq("phone", phone.strip())
-                .eq("password", password)  # Matches your registration
-                .execute()
-            )
+    # LOGIN LOGIC - PROPER INDENTATION
+    if login_action:
+        if not all([email, phone, password]):
+            st.error(t("fields_required"))
+        else:
+            try:
+                # Query YOUR users_login table (custom auth)
+                auth_resp = (
+                    supabase.table("users_login")
+                    .select("id, user_id, name, email, phone")
+                    .eq("email", email.lower().strip())
+                    .eq("phone", phone.strip())
+                    .eq("password", password)
+                    .execute()
+                )
 
-            if auth_resp.data and len(auth_resp.data) > 0:
-                user_row = auth_resp.data[0]
-                st.success(t("login_success"))
-                st.session_state["user_id"] = user_row["id"]  # Table ID (1,2,3...)
-                st.session_state["user_info"] = {
-                    "name": user_row["name"],
-                    "email": user_row["email"], 
-                    "phone": user_row["phone"]
-                }
-                st.rerun()
-            else:
-                st.error(t("invalid_credentials"))
-        except Exception as e:
-            st.error(f"Login failed: {str(e)}")
-
+                if auth_resp.data and len(auth_resp.data) > 0:
+                    user_row = auth_resp.data[0]
+                    st.success(t("login_success"))
+                    st.session_state["user_id"] = user_row["id"]
+                    st.session_state["user_info"] = {
+                        "name": user_row["name"],
+                        "email": user_row["email"],
+                        "phone": user_row["phone"]
+                    }
+                    st.rerun()
+                else:
+                    st.error(t("invalid_credentials"))
+            except Exception as e:
+                st.error(f"💥 Login failed: {str(e)}")
+   
 
     # REGISTER LOGIC
 if register_action:
@@ -650,6 +651,7 @@ if st.session_state.get("user_id"):
 else:
     st.warning(t("auth_required"))
     st.info(t("auth_info"))
+
 
 
 
