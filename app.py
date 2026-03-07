@@ -389,24 +389,35 @@ if login_action:
 # REGISTER LOGIC
 if register_action:
     errors = []
+    
+    # Validation
     if not all([full_name.strip(), email.strip(), phone, password]):
         errors.append(t("fields_required"))
     elif not validate_mobile(phone):
         errors.append(t("mobile_invalid"))
     elif not validate_password(password):
         errors.append(t("password_invalid"))
+    
+    # Check if email already exists
+    try:
+        existing = supabase.table("users_login").select("user_id").eq("email", email.strip().lower()).execute()
+        if existing.data:
+            errors.append("❌ Email already registered!")
+    except:
+        pass  # Network error, continue
 
     if errors:
         for e in errors:
-            st.error(e)
+            st.sidebar.error(e)
     else:
         try:
-            # 🔥 FIXED: Safe count handling
+            # Safe count + next ID
             count_resp = supabase.table("users_login").select("count").execute()
-            existing_count = getattr(count_resp, 'count', 0) or 0  # Triple-safe!
+            existing_count = getattr(count_resp, 'count', 0) or 0
             next_count = existing_count + 1
             user_id_formatted = f"ADS{next_count:03d}"
             
+            # Insert new user
             uresp = supabase.table("users_login").insert({
                 "timestamp": datetime.now().isoformat(timespec="seconds"),
                 "user_id": user_id_formatted,
@@ -417,11 +428,21 @@ if register_action:
             }).execute()
 
             if uresp.data:
-                st.success(f"✅ {t('register_success')} (ID: {user_id_formatted})")
+                st.sidebar.success(f"✅ {t('register_success')} (ID: {user_id_formatted})")
+                st.session_state["user_id"] = user_id_formatted
+                st.session_state["user_info"] = {
+                    "name": full_name.strip(),
+                    "email": email.strip().lower(), 
+                    "phone": phone.strip(),
+                    "formatted_id": user_id_formatted
+                }
+                st.rerun()
             else:
-                st.error("❌ Register failed - no response data")
+                st.sidebar.error("❌ Register failed - no response data")
+                
         except Exception as e:
-            st.error(f"💥 Register failed: {str(e)}")
+            st.sidebar.error(f"💥 Register failed: {str(e)}")
+            st.sidebar.exception(e)
 
 # Show user info + logout button if logged in
 if st.session_state.get("user_id"):
@@ -651,4 +672,5 @@ if st.session_state.get("user_id"):
 else:
     st.warning(t("auth_required"))
     st.info(t("auth_info"))
+
 
