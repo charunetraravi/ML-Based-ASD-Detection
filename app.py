@@ -225,7 +225,7 @@ def t(key: str) -> str:
     return TRANSLATIONS[lang_code].get(key, key)
 
 def validate_mobile(phone: str) -> bool:
-    return bool(re.match(r"^\d{10}$", phone))  # ✅ Remove extra backslash
+    return bool(re.match(r"^\d{10}$", phone))  # Remove extra 
 
 def validate_password(pwd: str) -> bool:
     return len(pwd) >= 8
@@ -352,39 +352,41 @@ with st.sidebar:
         with c2:
             register_action = st.form_submit_button(t("register_btn"), use_container_width=True)
 
-    # LOGIN LOGIC - PROPER INDENTATION
-    if login_action:
-        if not all([email, phone, password]):
-            st.error(t("fields_required"))
-        else:
-            try:
-                # Query YOUR users_login table (custom auth)
-                auth_resp = (
-                    supabase.table("users_login")
-                    .select("id, user_id, name, email, phone")
-                    .eq("email", email.lower().strip())
-                    .eq("phone", phone.strip())
-                    .eq("password", password)
-                    .execute()
-                )
+    # LOGIN LOGIC
+if login_action:
+    if not all([email, phone, password]):
+        st.error(t("fields_required"))
+    else:
+        try:
+            auth_resp = (
+                supabase.table("users_login")
+                .select("id, user_id, name, email, phone")  # ✅ Get user_id
+                .eq("email", email.lower().strip())
+                .eq("phone", phone.strip())
+                .eq("password", password)
+                .execute()
+            )
 
-                if auth_resp.data and len(auth_resp.data) > 0:
-                    user_row = auth_resp.data[0]
-                    st.success(t("login_success"))
-                    st.session_state["user_id"] = user_row["id"]
-                    st.session_state["user_info"] = {
-                        "name": user_row["name"],
-                        "email": user_row["email"],
-                        "phone": user_row["phone"]
-                    }
-                    st.rerun()
-                else:
-                    st.error(t("invalid_credentials"))
-            except Exception as e:
-                st.error(f"💥 Login failed: {str(e)}")
-   
+            if auth_resp.data and len(auth_resp.data) > 0:
+                user_row = auth_resp.data[0]
+                st.success(t("login_success"))
+                
+                # ✅ BOTH IDs for perfect matching!
+                st.session_state["user_id"] = user_row["user_id"]  # "ADS001"
+                st.session_state["user_db_id"] = user_row["id"]    # 1,2,3... (backup)
+                st.session_state["user_info"] = {
+                    "name": user_row["name"],
+                    "email": user_row["email"],
+                    "phone": user_row["phone"],
+                    "formatted_id": user_row["user_id"]  # "ADS001"
+                }
+                st.rerun()
+            else:
+                st.error(t("invalid_credentials"))
+        except Exception as e:
+            st.error(f"💥 Login failed: {str(e)}")
 
-    # REGISTER LOGIC
+# REGISTER LOGIC
 if register_action:
     errors = []
     if not all([full_name.strip(), email.strip(), phone, password]):
@@ -399,16 +401,15 @@ if register_action:
             st.error(e)
     else:
         try:
-            # DISABLE Supabase Auth email-sign-up (timeout source)
-            # supabase.auth.sign_up({
-            #     "email": email,
-            #     "password": password
-            # })
-
+            # 🔥 Generate NEXT ADS### ID
+            count_resp = supabase.table("users_login").select("count").execute()
+            next_count = count_resp.count + 1
+            user_id_formatted = f"ADS{next_count:03d}"  # ADS001, ADS002...
+            
             uresp = (
                 supabase.table("users_login").insert({
                     "timestamp": datetime.now().isoformat(timespec="seconds"),
-                    "user_id": str(uuid.uuid4())[:8],
+                    "user_id": user_id_formatted,  # ✅ ADS001
                     "name": full_name.strip(),
                     "email": email.strip().lower(),
                     "phone": phone.strip(),
@@ -417,27 +418,28 @@ if register_action:
             )
 
             if uresp.data:
-                st.success(t("register_success"))
+                st.success(f"✅ {t('register_success')} (ID: {user_id_formatted})")
             else:
-                st.error("❌ Register: failed to save user in database.")
+                st.error("❌ Register failed")
         except Exception as e:
             st.error("💥 Register failed: " + str(e))
 
-    # Show user info + logout button if logged in
-    if st.session_state.get("user_id"):
-        st.markdown("---")
-        ui = st.session_state["user_info"]
-        st.markdown(
-            f'<div class="sidebar-card"><div class="sidebar-title">{t("welcome")} {ui["name"]}</div>'
-            f'<div class="sidebar-text">📧 {ui["email"]}<br>📞 {ui["phone"]}</div></div>',
-            unsafe_allow_html=True
-        )
+# Show user info + logout button if logged in
+if st.session_state.get("user_id"):
+    st.markdown("---")
+    ui = st.session_state["user_info"]
+    st.markdown(
+        f'<div class="sidebar-card">'
+        f'<div class="sidebar-title">👋 {t("welcome")} {ui["name"]} <span style="color:#f472b6;">(ID: {st.session_state["user_id"]})</span></div>'
+        f'<div class="sidebar-text">📧 {ui["email"]}<br>📞 {ui["phone"]}</div></div>',
+        unsafe_allow_html=True
+    )
 
-        if st.button(t("logout"), use_container_width=True):
-            st.session_state["user_id"] = None
-            st.session_state["user_info"] = {}
-            supabase.auth.sign_out()
-            st.rerun()
+    if st.button(t("logout"), use_container_width=True):
+        # Clear ALL session state
+        for key in list(st.session_state.keys()):
+            del st.session_state[key]
+        st.rerun()
 
 # MAIN APP
 if st.session_state.get("user_id"):
@@ -650,7 +652,3 @@ if st.session_state.get("user_id"):
 else:
     st.warning(t("auth_required"))
     st.info(t("auth_info"))
-
-
-
-
