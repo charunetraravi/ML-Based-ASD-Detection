@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 import os
 from datetime import datetime
-import uuid
 import io
 import re
 import time
@@ -93,7 +92,7 @@ hr.q-separator { border:0; height:1px; background:linear-gradient(90deg, rgba(12
 </style>
 """, unsafe_allow_html=True)
 
-# ✅ UPDATED: Clearer Explanations
+# ✅ EXPLANATIONS
 EXPLANATIONS = {
     "A1": {"en": "Natural eye contact during interaction", "ta": "பேசும்போது கண் பார்வை"},
     "A2": {"en": "Turns head when name called", "ta": "பெயர் சொன்னால் திரும்புதல்"},
@@ -139,8 +138,8 @@ TRANSLATIONS = {
         "asd_screening": "A1–A10 ASD screening",
         "scoring_hint": "select your observation",
         "child_details": "Child / Adult details",
-        "age_years": "age (years) *",
-        "age_months": "extra months * (0-12)",
+        "age_years": "age (years)",
+        "age_months": "extra months (0-12)",
         "gender": "gender",
         "blood_group": "🩸 blood group *",
         "ethnicity": "ethnicity *",
@@ -164,7 +163,7 @@ TRANSLATIONS = {
         "score_desc": "Mark what you **observe most often**",
         "month_validation": "❌ Months must be 0-12 only!"
     },
-        "ta": {
+    "ta": {
         "app_title": "🧠 AI ASD கண்டறிதல்",
         "language_select": "மொழி / Language",
         "sidebar_title": "🔐 பயனர் அங்கீகாரம்",
@@ -194,10 +193,11 @@ TRANSLATIONS = {
         "asd_screening": "A1–A10 ASD திரையிடல்",
         "scoring_hint": "நீங்கள் பார்ப்பதை தேர்ந்தெடுக்கவும்",
         "child_details": "குழந்தை / பெரியவர் விவரங்கள்",
-        "age_years": "வயது (வருடங்கள்) *",
-        "age_months": "மாதங்கள் * (0-12)",
+        "age_years": "வயது (வருடங்கள்)",
+        "age_months": "மாதங்கள் (0-12)",
         "gender": "பாலினம்",
         "blood_group": "🩸 இரத்த வகை *",
+        "ethnicity": "இனம் *",
         "jaundice": "நீர்மோசம்? *",
         "family_asd": "குடும்ப ASD? *",
         "analyze_btn": "🚀 பகுப்பாய்வு & சேமி",
@@ -219,13 +219,15 @@ TRANSLATIONS = {
         "month_validation": "❌ மாதங்கள் 0-12 மட்டுமே!"
     }
 }
+
 def t(key: str) -> str:
     current_lang = st.session_state.get("lang", "English")
     lang_code = "ta" if current_lang == "தமிழ்" else "en"
     return TRANSLATIONS[lang_code].get(key, key)
 
+# ✅ FIXED REGEX - ONE backslash!
 def validate_mobile(phone: str) -> bool:
-    return bool(re.match(r"^\\d{10}$", phone))  # Remove extra 
+    return bool(re.match(r"^\d{10}$", phone.strip()))
 
 def validate_password(pwd: str) -> bool:
     return len(pwd) >= 8
@@ -283,7 +285,6 @@ def save_user_response(record):
         st.error(f"Supabase insert error: {str(e)}")
         return False
 
-
 def get_age_adjusted_thresholds(total_months):
     if total_months <= 24:
         return 0.39, 0.74
@@ -295,7 +296,6 @@ def get_age_adjusted_thresholds(total_months):
         return 0.19, 0.44
     else:
         return 0.14, 0.34
-
 
 def get_risk_drivers(a_scores, prob, total_months):
     high_drivers = ["A5", "A6", "A8"]
@@ -309,6 +309,7 @@ def get_risk_drivers(a_scores, prob, total_months):
         social_matches = [q for q in social_drivers if q in ones]
         return social_matches[:2] if social_matches else ones[:2]
     return ["None"]
+
 # SESSION STATE
 if "lang" not in st.session_state:
     st.session_state["lang"] = "English"
@@ -352,7 +353,7 @@ with st.sidebar:
         with c2:
             register_action = st.form_submit_button(t("register_btn"), use_container_width=True)
 
-    # LOGIN LOGIC
+# LOGIN LOGIC
 if login_action:
     if not all([email, phone, password]):
         st.error(t("fields_required"))
@@ -360,7 +361,7 @@ if login_action:
         try:
             auth_resp = (
                 supabase.table("users_login")
-                .select("id, user_id, name, email, phone")  # ✅ Get user_id
+                .select("id, user_id, name, email, phone")
                 .eq("email", email.lower().strip())
                 .eq("phone", phone.strip())
                 .eq("password", password)
@@ -371,14 +372,13 @@ if login_action:
                 user_row = auth_resp.data[0]
                 st.success(t("login_success"))
                 
-                # ✅ BOTH IDs for perfect matching!
-                st.session_state["user_id"] = user_row["user_id"]  # "ADS001"
-                st.session_state["user_db_id"] = user_row["id"]    # 1,2,3... (backup)
+                st.session_state["user_id"] = user_row["user_id"]
+                st.session_state["user_db_id"] = user_row["id"]
                 st.session_state["user_info"] = {
                     "name": user_row["name"],
                     "email": user_row["email"],
                     "phone": user_row["phone"],
-                    "formatted_id": user_row["user_id"]  # "ADS001"
+                    "formatted_id": user_row["user_id"]
                 }
                 st.rerun()
             else:
@@ -390,7 +390,6 @@ if login_action:
 if register_action:
     errors = []
     
-    # Validation
     if not all([full_name.strip(), email.strip(), phone, password]):
         errors.append(t("fields_required"))
     elif not validate_mobile(phone):
@@ -398,26 +397,23 @@ if register_action:
     elif not validate_password(password):
         errors.append(t("password_invalid"))
     
-    # Check if email already exists
     try:
         existing = supabase.table("users_login").select("user_id").eq("email", email.strip().lower()).execute()
         if existing.data:
             errors.append("❌ Email already registered!")
     except:
-        pass  # Network error, continue
+        pass
 
     if errors:
         for e in errors:
             st.sidebar.error(e)
     else:
         try:
-            # Safe count + next ID
             count_resp = supabase.table("users_login").select("count").execute()
             existing_count = getattr(count_resp, 'count', 0) or 0
             next_count = existing_count + 1
             user_id_formatted = f"ADS{next_count:03d}"
             
-            # Insert new user
             uresp = supabase.table("users_login").insert({
                 "timestamp": datetime.now().isoformat(timespec="seconds"),
                 "user_id": user_id_formatted,
@@ -442,9 +438,8 @@ if register_action:
                 
         except Exception as e:
             st.sidebar.error(f"💥 Register failed: {str(e)}")
-            st.sidebar.exception(e)
 
-# Show user info + logout button if logged in
+# Show user info + logout button if logged in (SIDEBAR)
 if st.session_state.get("user_id"):
     st.markdown("---")
     ui = st.session_state["user_info"]
@@ -456,12 +451,11 @@ if st.session_state.get("user_id"):
     )
 
     if st.button(t("logout"), use_container_width=True):
-        # Clear ALL session state
         for key in list(st.session_state.keys()):
             del st.session_state[key]
         st.rerun()
 
-# MAIN APP
+# ✅ MAIN APP - CORRECT STRUCTURE
 if st.session_state.get("user_id"):
     QUESTIONS = {
         "A1": {"en": "Eye contact – looks at eyes?", "ta": "முகம் பார்க்கிறாரா?"},
@@ -475,7 +469,6 @@ if st.session_state.get("user_id"):
         "A9": {"en": "Pretend play?", "ta": "கற்பனை விளையாட்டு?"},
         "A10": {"en": "Age-appropriate milestones?", "ta": "வயது ஏற்ற வளர்ச்சி?"}
     }
-    # Use current language for questions
     lang_key = "ta" if st.session_state["lang"] == "தமிழ்" else "en"
 
     # HOW TO USE
@@ -574,101 +567,84 @@ if st.session_state.get("user_id"):
             ["", "no", "yes"]
         )
 
-    # ANALYZE BUTTON
-    if st.button(t("analyze_btn"), use_container_width=True):
+    # ✅ ANALYZE BUTTON - PROPERLY INDENTED
+    if st.button(t("analyze_btn"), use_container_width=True, type="primary"):
         missing = []
-        # Age months must be 0–12
+        validation_errors = []
+        
         if age_months < 0 or age_months > 12:
-            st.error(t("month_validation"))
-        # Required fields
+            validation_errors.append(t("month_validation"))
         if total_months <= 0:
-            missing.append("age")
+            validation_errors.append("❌ Age required!")
+        
         if blood_group == "":
-            missing.append(t("blood_group"))
+            missing.append("🩸 " + t("blood_group"))
         if ethnicity == "":
-            missing.append(t("ethnicity"))
+            missing.append("🌍 " + t("ethnicity"))
         if jaundice == "":
-            missing.append(t("jaundice"))
+            missing.append("🟡 " + t("jaundice"))
         if family_asd == "":
-            missing.append(t("family_asd"))
+            missing.append("👨‍👩‍👧 " + t("family_asd"))
 
-        if age_months < 0 or age_months > 12 or missing:
+        if validation_errors or missing:
+            for error in validation_errors:
+                st.error(error)
             if missing:
-                st.error(t("missing_required") + ", ".join(missing))
+                st.error(t("missing_required") + " " + ", ".join(missing))
         else:
-            total_ones = sum(a_scores.values())
-            low_thresh, high_thresh = get_age_adjusted_thresholds(total_months)
+            with st.spinner("🤖 Analyzing ASD risk..."):
+                total_ones = sum(a_scores.values())
+                low_thresh, high_thresh = get_age_adjusted_thresholds(total_months)
+                age_factor = max(0.7, 1.6 - (total_months / 100))
 
-            # Very simple age‑factor to reduce prob for older ages
-            age_factor = max(0.7, 1.6 - (total_months / 100))
+                if total_ones >= 5:
+                    prob = min(0.95, 0.76 + (total_ones - 5) * 0.04 * age_factor)
+                elif total_ones >= 3:
+                    prob = min(0.65, 0.36 + (total_ones - 3) * 0.08 * age_factor)
+                else:
+                    prob = min(0.28, 0.07 + total_ones * 0.10 * age_factor)
 
-            if total_ones >= 5:
-                prob = min(0.95, 0.76 + (total_ones - 5) * 0.04 * age_factor)
-            elif total_ones >= 3:
-                prob = min(0.65, 0.36 + (total_ones - 3) * 0.08 * age_factor)
-            else:
-                prob = min(0.28, 0.07 + total_ones * 0.10 * age_factor)
+                risk_drivers = get_risk_drivers(a_scores, prob, total_months)
+                risk_category = "HIGH" if prob > high_thresh else "MEDIUM" if prob > low_thresh else "LOW"
 
-            risk_drivers = get_risk_drivers(a_scores, prob, total_months)
+                record = {
+                    **a_scores, "total_ones": total_ones, "age_years": age_years,
+                    "age_months": age_months, "total_months": total_months,
+                    "gender": gender, "blood_group": blood_group,
+                    "ethnicity": ethnicity, "jaundice": jaundice,
+                    "family_asd": family_asd, "asd_probability": float(prob),
+                    "risk_category": risk_category
+                }
 
-            # Save ALL data to backend
-            record = {
-                **a_scores,
-                "total_ones": total_ones,
-                "age_years": age_years,
-                "age_months": age_months,
-                "total_months": total_months,
-                "gender": gender,
-                "blood_group": blood_group,
-                "ethnicity": ethnicity,
-                "jaundice": jaundice,
-                "family_asd": family_asd,
-                "asd_probability": float(prob),
-                "risk_category": "HIGH" if prob > high_thresh else "MEDIUM" if prob > low_thresh else "LOW"
-            }
+                if save_user_response(record):
+                    st.markdown(f'<div class="card-kid"><div class="question-text">📊 {t("ai_result")}</div></div>', unsafe_allow_html=True)
+                    
+                    r1, r2, r3, r4 = st.columns([2, 2, 3, 3])
+                    with r1:
+                        st.metric(t("asd_prob"), f"{prob:.1%}")
+                    with r2:
+                        st.metric(t("aq_score"), total_ones, delta=f"/10")
+                    with r3:
+                        risk_class = f"risk-{risk_category.lower()}"
+                        st.markdown(f'<div class="{risk_class}">{t(f"{risk_category.lower()}_risk")}</div>', unsafe_allow_html=True)
+                        st.caption(f"({total_months}mo: {low_thresh:.0%}–{high_thresh:.0%})")
+                    with r4:
+                        driver_text = ", ".join(risk_drivers) if risk_drivers != ["None"] else t("no_concern")
+                        st.markdown(f"**{t('risk_drivers')}**: {driver_text}")
 
-            if save_user_response(record):
-                st.markdown(
-                    f'<div class="card-kid">'
-                    f'<div class="question-text" style="font-size:1.15rem;">📊 {t("ai_result")}</div>'
-                    f'</div>',
-                    unsafe_allow_html=True
-                )
-
-                r1, r2, r3, r4 = st.columns(4)
-                with r1:
-                    st.metric(t("asd_prob"), f"{prob:.1%}")
-                with r2:
-                    st.metric(t("aq_score"), total_ones, delta="/10")
-                with r3:
-                    age_context = f"({total_months}mo: {low_thresh:.0%}–{high_thresh:.0%})"
-                    if prob > high_thresh:
-                        st.markdown(f'<div class="risk-high">{t("high_risk")}</div>', unsafe_allow_html=True)
-                    elif prob > low_thresh:
-                        st.markdown(f'<div class="risk-medium">{t("moderate_risk")}</div>', unsafe_allow_html=True)
-                    else:
-                        st.markdown(f'<div class="risk-low">{t("low_risk")}</div>', unsafe_allow_html=True)
-                    st.caption(age_context)
-                with r4:
-                    driver_text = (
-                        ", ".join(risk_drivers) if risk_drivers and risk_drivers[0] != "None" else t("no_concern")
+                    buf = io.StringIO()
+                    pd.DataFrame([record]).to_csv(buf, index=False)
+                    st.download_button(
+                        t("download_report"), buf.getvalue(),
+                        f"asd_report_{st.session_state['user_id']}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
+                        "text/csv"
                     )
-                    st.markdown(f"**{t('risk_drivers')}**: {driver_text}")
-
-                # DOWNLOAD REPORT
-                buf = io.StringIO()
-                df_record = pd.DataFrame([record])
-                df_record.to_csv(buf, index=False)
-                st.download_button(
-                    t("download_report"),
-                    buf.getvalue(),
-                    file_name=f"asd_report_{st.session_state['user_id']}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
-                    mime="text/csv"
-                )
-                st.success(t("saved_success"))
-            else:
-                st.error("Failed to save results!")
-
+                    st.success(t("saved_success"))
+                else:
+                    st.error("💾 Failed to save results!")
 else:
-    st.warning(t("auth_required"))
-    st.info(t("auth_info"))
+    # ✅ AUTH MESSAGES - PROPERLY OUTSIDE if user_id:
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.warning("🔐 " + t("auth_required"))
+        st.info("📱 " + t("auth_info"))
