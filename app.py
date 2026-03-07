@@ -386,10 +386,11 @@ if login_action:
         except Exception as e:
             st.error(f"💥 Login failed: {str(e)}")
 
-# REGISTER LOGIC
+# REGISTER LOGIC - AUTO-LOGIN + SUCCESS POPUP
 if register_action:
     errors = []
     
+    # Validation
     if not all([full_name.strip(), email.strip(), phone, password]):
         errors.append(t("fields_required"))
     elif not validate_mobile(phone):
@@ -397,6 +398,7 @@ if register_action:
     elif not validate_password(password):
         errors.append(t("password_invalid"))
     
+    # Check email exists
     try:
         existing = supabase.table("users_login").select("user_id").eq("email", email.strip().lower()).execute()
         if existing.data:
@@ -409,11 +411,19 @@ if register_action:
             st.sidebar.error(e)
     else:
         try:
-            count_resp = supabase.table("users_login").select("count").execute()
-            existing_count = getattr(count_resp, 'count', 0) or 0
-            next_count = existing_count + 1
-            user_id_formatted = f"ADS{next_count:03d}"
+            # ✅ FIXED: Get NEXT unique user_id
+            max_resp = supabase.table("users_login").select("user_id").order("user_id", desc=True).limit(1).execute()
             
+            if max_resp.data and len(max_resp.data) > 0:
+                last_id = max_resp.data[0]["user_id"]  # "ADS005"
+                last_num = int(last_id.replace("ADS", ""))
+                next_num = last_num + 1
+            else:
+                next_num = 1
+            
+            user_id_formatted = f"ADS{next_num:03d}"
+            
+            # Insert user
             uresp = supabase.table("users_login").insert({
                 "timestamp": datetime.now().isoformat(timespec="seconds"),
                 "user_id": user_id_formatted,
@@ -424,20 +434,28 @@ if register_action:
             }).execute()
 
             if uresp.data:
+                # ✅ SUCCESS POPUP + AUTO-LOGIN
                 st.sidebar.success(f"✅ {t('register_success')} (ID: {user_id_formatted})")
+                st.sidebar.success("🔐 Auto-login successful!")
+                
+                # Set session state for auto-login
                 st.session_state["user_id"] = user_id_formatted
                 st.session_state["user_info"] = {
                     "name": full_name.strip(),
-                    "email": email.strip().lower(), 
+                    "email": email.strip().lower(),
                     "phone": phone.strip(),
                     "formatted_id": user_id_formatted
                 }
+                
+                # ✅ DELAYED RERUN - Shows success 2 seconds
+                time.sleep(2)
                 st.rerun()
             else:
                 st.sidebar.error("❌ Register failed - no response data")
                 
         except Exception as e:
             st.sidebar.error(f"💥 Register failed: {str(e)}")
+
 
 # Show user info + logout button if logged in (SIDEBAR)
 if st.session_state.get("user_id"):
@@ -648,4 +666,5 @@ else:
     with col2:
         st.warning("🔐 " + t("auth_required"))
         st.info("📱 " + t("auth_info"))
+
 
