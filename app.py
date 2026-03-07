@@ -648,3 +648,4 @@ else:
     with col2:
         st.warning("🔐 " + t("auth_required"))
         st.info("📱 " + t("auth_info"))
+
