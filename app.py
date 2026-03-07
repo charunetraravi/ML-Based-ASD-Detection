@@ -401,28 +401,27 @@ if register_action:
             st.error(e)
     else:
         try:
-            # 🔥 Generate NEXT ADS### ID
+            # 🔥 FIXED: Safe count handling
             count_resp = supabase.table("users_login").select("count").execute()
-            next_count = count_resp.count + 1
-            user_id_formatted = f"ADS{next_count:03d}"  # ADS001, ADS002...
+            existing_count = getattr(count_resp, 'count', 0) or 0  # Triple-safe!
+            next_count = existing_count + 1
+            user_id_formatted = f"ADS{next_count:03d}"
             
-            uresp = (
-                supabase.table("users_login").insert({
-                    "timestamp": datetime.now().isoformat(timespec="seconds"),
-                    "user_id": user_id_formatted,  # ✅ ADS001
-                    "name": full_name.strip(),
-                    "email": email.strip().lower(),
-                    "phone": phone.strip(),
-                    "password": password
-                }).execute()
-            )
+            uresp = supabase.table("users_login").insert({
+                "timestamp": datetime.now().isoformat(timespec="seconds"),
+                "user_id": user_id_formatted,
+                "name": full_name.strip(),
+                "email": email.strip().lower(),
+                "phone": phone.strip(),
+                "password": password
+            }).execute()
 
             if uresp.data:
                 st.success(f"✅ {t('register_success')} (ID: {user_id_formatted})")
             else:
-                st.error("❌ Register failed")
+                st.error("❌ Register failed - no response data")
         except Exception as e:
-            st.error("💥 Register failed: " + str(e))
+            st.error(f"💥 Register failed: {str(e)}")
 
 # Show user info + logout button if logged in
 if st.session_state.get("user_id"):
@@ -652,3 +651,4 @@ if st.session_state.get("user_id"):
 else:
     st.warning(t("auth_required"))
     st.info(t("auth_info"))
+
