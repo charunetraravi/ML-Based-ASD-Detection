@@ -354,6 +354,7 @@ with st.sidebar:
             register_action = st.form_submit_button(t("register_btn"), use_container_width=True)
 
 # LOGIN LOGIC
+# LOGIN LOGIC - RETURNING USER (Unique Success Messages)
 if login_action:
     if not all([email, phone, password]):
         st.error(t("fields_required"))
@@ -370,8 +371,12 @@ if login_action:
 
             if auth_resp.data and len(auth_resp.data) > 0:
                 user_row = auth_resp.data[0]
-                st.success(t("login_success"))
                 
+                # ✅ DISTINCT LOGIN SUCCESS MESSAGES
+                st.sidebar.success(f"✅ Welcome back, {user_row['name']}! (ID: {user_row['user_id']})")
+                st.sidebar.success("👋 Great to see you again! Loading app...")
+                
+                # Auto-login session state
                 st.session_state["user_id"] = user_row["user_id"]
                 st.session_state["user_db_id"] = user_row["id"]
                 st.session_state["user_info"] = {
@@ -380,13 +385,17 @@ if login_action:
                     "phone": user_row["phone"],
                     "formatted_id": user_row["user_id"]
                 }
+                
+                time.sleep(2)  # Show success 2 sec
                 st.rerun()
             else:
                 st.error(t("invalid_credentials"))
         except Exception as e:
             st.error(f"💥 Login failed: {str(e)}")
 
+
 # REGISTER LOGIC - AUTO-LOGIN + SUCCESS POPUP
+# REGISTER LOGIC - NEW USER (Unique Success Messages + Fixed ID)
 if register_action:
     errors = []
     
@@ -411,7 +420,7 @@ if register_action:
             st.sidebar.error(e)
     else:
         try:
-            # ✅ FIXED: Get NEXT unique user_id
+            # ✅ FIXED UNIQUE user_id generation
             max_resp = supabase.table("users_login").select("user_id").order("user_id", desc=True).limit(1).execute()
             
             if max_resp.data and len(max_resp.data) > 0:
@@ -423,7 +432,7 @@ if register_action:
             
             user_id_formatted = f"ADS{next_num:03d}"
             
-            # Insert user
+            # Insert new user
             uresp = supabase.table("users_login").insert({
                 "timestamp": datetime.now().isoformat(timespec="seconds"),
                 "user_id": user_id_formatted,
@@ -434,11 +443,11 @@ if register_action:
             }).execute()
 
             if uresp.data:
-                # ✅ SUCCESS POPUP + AUTO-LOGIN
-                st.sidebar.success(f"✅ {t('register_success')} (ID: {user_id_formatted})")
-                st.sidebar.success("🔐 Auto-login successful!")
+                # ✅ DISTINCT REGISTER SUCCESS MESSAGES
+                st.sidebar.success(f"✅ Welcome aboard, {full_name.strip()}! (ID: {user_id_formatted})")
+                st.sidebar.success("🎉 Account created + auto-logged in! Loading app...")
                 
-                # Set session state for auto-login
+                # Auto-login session state
                 st.session_state["user_id"] = user_id_formatted
                 st.session_state["user_info"] = {
                     "name": full_name.strip(),
@@ -447,15 +456,13 @@ if register_action:
                     "formatted_id": user_id_formatted
                 }
                 
-                # ✅ DELAYED RERUN - Shows success 2 seconds
-                time.sleep(2)
+                time.sleep(2)  # Show success 2 sec
                 st.rerun()
             else:
                 st.sidebar.error("❌ Register failed - no response data")
                 
         except Exception as e:
             st.sidebar.error(f"💥 Register failed: {str(e)}")
-
 
 # Show user info + logout button if logged in (SIDEBAR)
 if st.session_state.get("user_id"):
@@ -666,5 +673,6 @@ else:
     with col2:
         st.warning("🔐 " + t("auth_required"))
         st.info("📱 " + t("auth_info"))
+
 
 
