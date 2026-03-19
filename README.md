@@ -93,46 +93,6 @@ ML-Based-ASD-Detection/
 6. Prediction Generation
 7. Web Application Deployment
 
----
-
-## 💻 Run Project Locally
-
-### Step 1: Clone Repository
-
-```bash
-git clone https://github.com/charunetraravi/ML-Based-ASD-Detection.git
-```
-
-### Step 2: Move to Project Folder
-
-```bash
-cd ML-Based-ASD-Detection
-```
-
-### Step 3: Install Required Libraries
-
-```bash
-pip install -r requirements.txt
-```
-
-### Step 4: Run Streamlit Application
-
-```bash
-streamlit run app.py
-```
-
-### Step 5: Open in Browser
-
-http://localhost:8501
-
----
-
-## 📊 System Output
-
-The system predicts whether a user shows characteristics associated with Autism Spectrum Disorder based on questionnaire responses and trained machine learning models.
-
----
-
 ## ☁️ Deployment
 
 The application is deployed using **Streamlit Community Cloud**, enabling global access through a web browser without local installation.
